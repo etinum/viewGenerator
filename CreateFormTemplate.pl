@@ -86,7 +86,7 @@ sub ProcessLine {
 				$maxLength = $val;
 			}
 			if ($i == 5) {
-				$required = $val;
+				$required = lc$val;
 			}
 		}
 
