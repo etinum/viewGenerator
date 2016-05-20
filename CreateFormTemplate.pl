@@ -48,7 +48,7 @@ sub ProcessLine {
 		my @fields = $csv->fields();
 
 
-		if ($#fields != 5) {
+		if ($#fields != 7) {
 			warn "There needs to be **six** fields, you have $#fields"
 		}
 
@@ -61,6 +61,8 @@ sub ProcessLine {
 		my $ngmax="";
 		my $max="";
 		my $required="";
+		my $toolTip="";
+		my $options="";
 
 		for (my $i=0; $i <= $#fields; $i++) {
 
@@ -88,6 +90,12 @@ sub ProcessLine {
 			if ($i == 5) {
 				$required = lc$val;
 			}
+			if ($i == 6) {
+				$options=$val;
+			}
+			if ($i == 7) {
+				$toolTip=$val;
+			}
 		}
 
 		# Now you can take these values and print what you need to print
@@ -109,6 +117,11 @@ sub ProcessLine {
 			$required = "false";	
 		}
 
+		if ($toolTip ne "") {
+			$toolTip = 'uib-tooltip="'.$toolTip.'"';
+		}
+
+
 
 		if ($type =~ /^string$/i) {
 
@@ -119,7 +132,7 @@ sub ProcessLine {
 			print '<label for="'.$codeName.'" class="col-sm-3 control-label">'.$friendlyName.'</label>'."\n";
 			print '<div class="col-sm-'.$span.'">'."\n";
 			print '<input type="text" ng-maxlength="'.$ngmax.'" maxlength='.$max.' id="'.$codeName.'" name="'.$codeName.'" class="form-control"'."\n";
-			print 'ng-model="fmodel.'.$codeName.'" ng-required="'.$required.'" />'."\n";
+			print 'ng-model="fmodel.'.$codeName.'" '.$toolTip.' ng-required="'.$required.'" />'."\n";
 			print '<div class="help-block" ng-messages="myForm.'.$codeName.'.$error" ng-show="myForm.'.$codeName.'.$touched || submitted">'."\n";
 			print '<div ng-messages-include="app/html/error-messages.html"></div>'."\n";
 			print '</div>'."\n";
@@ -138,6 +151,14 @@ sub ProcessLine {
 
 		} elsif ($type =~ /^checkbox$/i) {
 			print "chekbox hit --> $friendlyName\n";
+		} elsif ($type =~ /^select$/i) {
+			# Parse the options strings for the JS generation.
+
+
+
+
+
+
 		} else {
 			warn "**** Line does not have a valid type: ****\n\t$line\n";
 
