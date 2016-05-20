@@ -126,18 +126,21 @@ sub ProcessLine {
 			print '</div>'."\n";
 			print '</div>'."\n";
 
-		}
+		} elsif ($type =~ /^number$/i) {
+			print "number hit --> $friendlyName\n";
+		} elsif ($type =~ /^date$/i) {
+			
+			# TODO: Generate the HTML template code
 
-		if ($type =~ /^number$/i) {
-			print "string hit --> $friendlyName\n";
-		}
 
-		if ($type =~ /^date$/i) {
-			print "string hit --> $friendlyName\n";
-		}
+			# TODO: Generate the corresponding TS/JS code here
 
-		if ($type =~ /^checkbox$/i) {
-			print "string hit --> $friendlyName\n";
+
+		} elsif ($type =~ /^checkbox$/i) {
+			print "chekbox hit --> $friendlyName\n";
+		} else {
+			warn "**** Line does not have a valid type: ****\n\t$line\n";
+
 		}
 
 
