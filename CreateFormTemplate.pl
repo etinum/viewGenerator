@@ -28,6 +28,7 @@ while (my $line = <$data>) {
 
 	createDateJS();
 	createDateJSEnum();
+	createSql();
 
 
 
@@ -210,7 +211,7 @@ sub ProcessLine {
 			# @personal = split(/:/, $info);
 			my @optionSplit = split(/;/,$options);
 			if ($#optionSplit <= 1) {
-				print "<!-- YOu will need to add the options manually.. -->\n";
+				print "<!-- YOu will need to add the options manually in Javascript -->\n";
 				print '$scope.'.$codeName.'Options = [\'Opt1\', \'Opt2\'];'."\n";
 			} else {
 
@@ -375,6 +376,104 @@ sub createDateJSEnum {
 	}
 	print '}'."\n";
 }
+
+
+
+sub createSql {
+
+
+	open(my $data, '<', $file) or die "Could not open '$file' $!\n";
+	my $commonOnce = 0;
+	my $index = 0;
+	while (my $line = <$data>) {
+		if ($line =~ /FriendlyName/) {
+			next;
+		}
+
+		chomp $line;
+
+
+		if ($csv->parse($line)) {
+
+			my @fields = $csv->fields();
+
+
+			if ($#fields != 7) {
+				warn "There needs to be **six** fields, you have $#fields"
+			}
+
+
+			my $friendlyName="";
+			my $codeName="";
+			my $type="";
+			my $maxLength="";
+
+
+			for (my $i=0; $i <= $#fields; $i++) {
+
+				my $val = $fields[$i];
+				$val =~ s/^\s+|\s+$//g;
+
+				if ($i == 1) {
+					$codeName = $val;
+				}
+				if ($i == 2) {
+					$type = $val;
+				}
+				if ($i == 4) {
+					$maxLength = $val;
+				}
+
+
+			}
+
+			if ($commonOnce == 0) {
+				print "\n\n\n\n<!-- *************** Generating Optional SQL Script **************** -->\n";
+				print 'CREATE TABLE [dbo].<TABLE_NAME>('."\n";
+				$commonOnce = 1;
+			}
+
+
+			if ($type =~ /^string$/i) {
+				if ($maxLength <= 100) {
+					$maxLength = 100
+				}
+				print '['.ucfirst$codeName.'] [NCHAR] ('.$maxLength.') NULL,'."\n";
+			} elsif ($type =~ /^number$/i) {
+				print '['.ucfirst$codeName.'] [INT] NULL,'."\n";
+			} elsif ($type =~ /^date$/i) {
+				print '['.ucfirst$codeName.'] [DATETIME] NULL,'."\n";
+			} elsif ($type =~ /^checkbox$/i) {
+				print '['.ucfirst$codeName.'] [BIT] NULL,'."\n";
+			} elsif ($type =~ /^select$/i) {
+				print '['.ucfirst$codeName.'] [NCHAR] (100) NULL,'."\n";
+			}
+
+
+
+
+
+
+		}
+	}
+	print ')'."\n";
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
