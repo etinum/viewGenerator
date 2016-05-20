@@ -6,17 +6,8 @@ use warnings;
 
 
 
-# print '<div class="form-group" show-errors>'."\n";
-# print '<label for="investigator" class="col-sm-3 control-label">Investigator</label>'."\n";
-# print '<div class="col-sm-9">'."\n";
-# print '<input type="text" ng-maxlength="ng_maxLength" maxlength={{maxLength}} id="investigator" name="investigator" class="form-control"'."\n";
-# print 'ng-model="rf.investigator" ng-required="true" />'."\n";
-# print '<div class="help-block" ng-messages="repoForm.investigator.$error" ng-show="repoForm.investigator.$touched || submitted">'."\n";
-# print '<div ng-messages-include="app/html/error-messages.html"></div>'."\n";
-# print '</div>'."\n";
-# print '</div>'."\n";
-# print '</div>'."\n";
-
+# Global variable
+my $formName = "rf";
 
 
 use Text::CSV;
@@ -124,7 +115,7 @@ sub ProcessLine {
 		}
 
 		if ($toolTip ne "") {
-			$toolTip = 'uib-tooltip="'.$toolTip.'"';
+			$toolTip = ' uib-tooltip="'.$toolTip.'" ';
 		}
 
 
@@ -140,7 +131,7 @@ sub ProcessLine {
 			print '<label for="'.$codeName.'" class="col-sm-3 control-label">'.$friendlyName.'</label>'."\n";
 			print '<div class="col-sm-'.$span.'">'."\n";
 			print '<input type="text" ng-maxlength="'.$ngmax.'" maxlength='.$max.' id="'.$codeName.'" name="'.$codeName.'" class="form-control"'."\n";
-			print 'ng-model="fmodel.'.$codeName.'" '.$toolTip.' ng-required="'.$required.'" />'."\n";
+			print 'ng-model="'.$formName.'.'.$codeName.'"'.$toolTip.'ng-required="'.$required.'" />'."\n";
 			print '<div class="help-block" ng-messages="myForm.'.$codeName.'.$error" ng-show="myForm.'.$codeName.'.$touched || submitted">'."\n";
 			print '<div ng-messages-include="app/html/error-messages.html"></div>'."\n";
 			print '</div>'."\n";
@@ -156,7 +147,7 @@ sub ProcessLine {
 			print '<label for="'.$codeName.'" class="col-sm-3 control-label">'.$friendlyName.'</label>'."\n";
 			print '<div class="col-sm-'.$span.'">'."\n";
 			print '<input type="number" ng-maxlength="'.$ngmax.'" maxlength='.$max.' id="'.$codeName.'" name="'.$codeName.'" class="form-control"'."\n";
-			print 'ng-model="fmodel.'.$codeName.'" '.$toolTip.' ng-required="'.$required.'" />'."\n";
+			print 'ng-model="'.$formName.'.'.$codeName.'"'.$toolTip.'ng-required="'.$required.'" />'."\n";
 			print '<div class="help-block" ng-messages="myForm.'.$codeName.'.$error" ng-show="myForm.'.$codeName.'.$touched || submitted">'."\n";
 			print '<div ng-messages-include="app/html/error-messages.html"></div>'."\n";
 			print '</div>'."\n";
@@ -171,7 +162,7 @@ sub ProcessLine {
 			print '<label for="'.$codeName.'" class="col-sm-3 control-label">'.$friendlyName.'</label>'."\n";
 			print '<div class="col-sm-6">'."\n";
 			print '<p class="input-group">'."\n";
-			print '<input id="'.$codeName.'" name="'.$codeName.'" type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="rf.'.$codeName.'" is-open="datePopupStatus.'.$codeName.'" datepicker-options="dateOptions" '.$toolTip.' ng-required="'.$required.'" close-text="Close" alt-input-formats="altInputFormats" readonly />'."\n";
+			print '<input id="'.$codeName.'" name="'.$codeName.'" type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="'.$formName.'.'.$codeName.'" is-open="datePopupStatus.'.$codeName.'" datepicker-options="dateOptions"'.$toolTip.'ng-required="'.$required.'" close-text="Close" alt-input-formats="altInputFormats" readonly />'."\n";
 			print '<span class="input-group-btn">'."\n";
 			print '<button type="button" class="btn btn-default" ng-click="openDatePopup(enumPopupType.'.$codeName.')"><i class="glyphicon glyphicon-calendar"></i></button>'."\n";
 			print '</span>'."\n";
@@ -184,18 +175,62 @@ sub ProcessLine {
 			print '</div>'."\n";
 
 
-
-
 		} elsif ($type =~ /^checkbox$/i) {
-			print "chekbox hit --> $friendlyName\n";
-
-
-
+			print '<div class="form-group">'."\n";
+			print '<div class="col-sm-offset-3 col-sm-9">'."\n";
+			print '<div class="checkbox">'."\n";
+			print '<label>'."\n";
+			print '<input type="checkbox"'."\n";
+			print 'ng-model="'.$formName.'.'.$codeName.'" '.$toolTip.'/>'.$friendlyName.''."\n";
+			print '</label>'."\n";
+			print '</div>'."\n";
+			print '</div>'."\n";
+			print '</div>'."\n";
 
 
 
 		} elsif ($type =~ /^select$/i) {
 		# Parse the options strings for the JS generation.
+			
+			print '<div class="form-group" show-errors>'."\n";
+			print '<label for="'.$codeName.'" class="col-sm-3 control-label">'.$friendlyName.'</label>'."\n";
+			print '<div class="col-sm-'.$span.'">'."\n";
+			print '<select id="'.$codeName.'" name="'.$codeName.'" class="form-control" data-ng-options="item for item in '.$codeName.'Options track by item"'."\n";
+			print 'data-ng-model="rf.'.$codeName.'" ng-required="'.$required.'"'.$toolTip.'>'."\n";
+			print '<option value="">---Please select---</option>'."\n";
+			print '</select>'."\n";
+			print '<div class="help-block" ng-messages="myForm.'.$codeName.'.$error" ng-show="myForm.'.$codeName.'.$touched || submitted">'."\n";
+			print '<div ng-messages-include="app/html/error-messages.html"></div>'."\n";
+			print '</div>'."\n";
+			print '</div>'."\n";
+			print '</div>'."\n";
+
+
+			print "<!-- ******* Javascript dropdown for: ($codeName) ******* -->\n";
+			# @personal = split(/:/, $info);
+			my @optionSplit = split(/;/,$options);
+			if ($#optionSplit <= 1) {
+				print "<!-- YOu will need to add the options manually.. -->\n";
+				print '$scope.'.$codeName.'Options = [\'Opt1\', \'Opt2\'];'."\n";
+			} else {
+
+
+				print '$scope.'.$codeName.'Options = [';
+				my $isFirst = 1;
+				foreach my $option (@optionSplit) { 
+				  if ($isFirst == 1) {
+				  	print '\''.$option.'\'';
+				  	$isFirst = 0;
+				  } else {
+				  	print ',';
+	  				print '\''.$option.'\'';
+				  }
+				} 
+
+				print '];'."\n";
+
+			}
+			# print '$scope.favColorOptions = ['Red', 'Blue', 'Orange', 'Black', 'White'];'."\n";
 
 
 
