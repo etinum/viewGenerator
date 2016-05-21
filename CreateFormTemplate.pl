@@ -182,7 +182,7 @@ sub ProcessLine {
 			print '<div class="checkbox">'."\n";
 			print '<label>'."\n";
 			print '<input type="checkbox"'."\n";
-			print 'ng-model="'.$formName.'.'.$codeName.'" '.$toolTip.'/>'.$friendlyName.''."\n";
+			print 'ng-model="'.$formName.'.'.$codeName.'"'.$toolTip.'/>'.$friendlyName.''."\n";
 			print '</label>'."\n";
 			print '</div>'."\n";
 			print '</div>'."\n";
@@ -207,7 +207,7 @@ sub ProcessLine {
 			print '</div>'."\n";
 
 
-			print "<!-- ******* Javascript dropdown for: ($codeName) ******* -->\n";
+			print "<!-- XXXXXXX Javascript dropdown for: ($codeName) XXXXXXX -->\n";
 			# @personal = split(/:/, $info);
 			my @optionSplit = split(/;/,$options);
 			if ($#optionSplit <= 1) {
@@ -219,6 +219,7 @@ sub ProcessLine {
 				print '$scope.'.$codeName.'Options = [';
 				my $isFirst = 1;
 				foreach my $option (@optionSplit) { 
+      		$option =~ s/^\s+|\s+$//g;
 				  if ($isFirst == 1) {
 				  	print '\''.$option.'\'';
 				  	$isFirst = 0;
