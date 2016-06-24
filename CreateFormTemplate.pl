@@ -4,10 +4,11 @@ use strict;
 use warnings;
 
 
-
+# You may need to update the csv file to make it more unix friendly for parsing purpose
+# tr -d '\15\32' < test.csv > unix.csv ; ./CreateFormTemplate.pl unix.csv
 
 # Global variable
-my $formName = "rf";
+my $formName = "uf";
 
 
 use Text::CSV;
@@ -69,7 +70,7 @@ sub ProcessLine {
 				$friendlyName = $val;
 			}
 			if ($i == 1) {
-				$codeName = $val;
+				$codeName = lcfirst($val);
 			}
 			if ($i == 2) {
 				$type = $val;
@@ -103,7 +104,7 @@ sub ProcessLine {
 			$max = "{{maxLength}}";
 		} else {
 			$ngmax = $maxLength;
-			$max = $maxLength
+			$max = '"'.$maxLength.'"';
 		}
 
 		if ($type eq "") {
@@ -116,7 +117,7 @@ sub ProcessLine {
 		}
 
 		if ($toolTip ne "") {
-			$toolTip = ' uib-tooltip="'.$toolTip.'" ';
+			$toolTip = ' uib-tooltip="'.$toolTip.'" tooltip-trigger="focus"  tooltip-placement="bottom-left" ';
 		}
 
 
@@ -125,14 +126,12 @@ sub ProcessLine {
 
 		if ($type =~ /^string$/i) {
 
-			# handle option fields
-
 
 			print '<div class="form-group" show-errors>'."\n";
 			print '<label for="'.$codeName.'" class="col-sm-3 control-label">'.$friendlyName.'</label>'."\n";
 			print '<div class="col-sm-'.$span.'">'."\n";
 			print '<input type="text" ng-maxlength="'.$ngmax.'" maxlength='.$max.' id="'.$codeName.'" name="'.$codeName.'" class="form-control"'."\n";
-			print 'ng-model="'.$formName.'.'.$codeName.'"'.$toolTip.'ng-required="'.$required.'" />'."\n";
+			print 'ng-model="'.$formName.'.'.$codeName.'"'.$toolTip.'ng-required="'.$required.'" autocomplete="off" />'."\n";
 			print '<div class="help-block" ng-messages="myForm.'.$codeName.'.$error" ng-show="myForm.'.$codeName.'.$touched || submitted">'."\n";
 			print '<div ng-messages-include="app/html/error-messages.html"></div>'."\n";
 			print '</div>'."\n";
@@ -141,14 +140,27 @@ sub ProcessLine {
 
 
 
+		} elsif ($type =~ /^textarea$/i) {
+
+
+			print '<div class="form-group" show-errors>'."\n";
+			print '<label for="'.$codeName.'" class="col-sm-3 control-label">'.$friendlyName.'</label>'."\n";
+			print '<div class="col-sm-'.$span.'">'."\n";
+			print '<textarea ng-maxlength="'.$ngmax.'" maxlength='.$max.' id="'.$codeName.'" name="'.$codeName.'" class="form-control"'."\n";
+			print 'ng-model="'.$formName.'.'.$codeName.'"'.$toolTip.'ng-required="'.$required.'" autocomplete="off" ></textarea>'."\n";
+			print '<div class="help-block" ng-messages="myForm.'.$codeName.'.$error" ng-show="myForm.'.$codeName.'.$touched || submitted">'."\n";
+			print '<div ng-messages-include="app/html/error-messages.html"></div>'."\n";
+			print '</div>'."\n";
+			print '</div>'."\n";
+			print '</div>'."\n";
+
 		} elsif ($type =~ /^number$/i) {
-			print "number hit --> $friendlyName\n";
 
 			print '<div class="form-group" show-errors>'."\n";
 			print '<label for="'.$codeName.'" class="col-sm-3 control-label">'.$friendlyName.'</label>'."\n";
 			print '<div class="col-sm-'.$span.'">'."\n";
 			print '<input type="number" ng-maxlength="'.$ngmax.'" maxlength='.$max.' id="'.$codeName.'" name="'.$codeName.'" class="form-control"'."\n";
-			print 'ng-model="'.$formName.'.'.$codeName.'"'.$toolTip.'ng-required="'.$required.'" />'."\n";
+			print 'ng-model="'.$formName.'.'.$codeName.'"'.$toolTip.'ng-required="'.$required.'" autocomplete="off" />'."\n";
 			print '<div class="help-block" ng-messages="myForm.'.$codeName.'.$error" ng-show="myForm.'.$codeName.'.$touched || submitted">'."\n";
 			print '<div ng-messages-include="app/html/error-messages.html"></div>'."\n";
 			print '</div>'."\n";
@@ -460,21 +472,4 @@ sub createSql {
 	print ')'."\n";
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
